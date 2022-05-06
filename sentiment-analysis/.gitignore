@@ -1,0 +1,6 @@
+*.pt
+*.pickle
+*.pkl
+__pycache__
+models
+data
