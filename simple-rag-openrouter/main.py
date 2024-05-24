@@ -3,11 +3,12 @@ from dotenv import load_dotenv
 import logging
 from chatbot import predict_chat
 import httpx
+import uuid
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(name)s - %(message)s")
-logger = logging.getLogger(__file__)
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(filename)s:%(lineno)d - %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def get_free_models():
@@ -15,13 +16,14 @@ def get_free_models():
     if res:
         res = res.json()
         models = [item["id"] for item in res["data"] if "free" in item["id"]]
-        return models
+        return sorted(models)
 
 
 with gr.Blocks(fill_height=True) as demo:
 
     models = get_free_models()
     
+    user_ids = gr.Textbox(visible=False, value=uuid.uuid4())
     model_choice = gr.Dropdown(
         choices=models,
         show_label=True,
@@ -29,13 +31,14 @@ with gr.Blocks(fill_height=True) as demo:
         interactive=True,
         value=models[0]
     )
+    
 
     chat_window = gr.Chatbot(bubble_full_width=False, render=False, scale=1)
 
     chat = gr.ChatInterface(
         predict_chat,
         chatbot=chat_window,
-        additional_inputs=model_choice,
+        additional_inputs=[model_choice, user_ids],
         fill_height=True,
         retry_btn=None,
         undo_btn=None,

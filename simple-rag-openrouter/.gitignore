@@ -1,3 +1,5 @@
+pyrightconfig.json
 .venv
 .env
 __pycache__
+*.db
