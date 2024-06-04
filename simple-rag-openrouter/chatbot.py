@@ -1,8 +1,7 @@
-from langchain_core.runnables import Runnable
 from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate, ChatPromptTemplate, MessagesPlaceholder, SystemMessagePromptTemplate
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_community.chat_message_histories import SQLChatMessageHistory, ChatMessageHistory
+from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain.callbacks.tracers import ConsoleCallbackHandler
 from typing import Optional
 import logging
@@ -19,7 +18,7 @@ def get_chat_history(session_id: str, limit: Optional[int] = None):
     return chat_history
 
 
-def predict_chat(message, history, model_name, user_id):
+def predict_chat(message: str, history: list, model_name: str, user_id: str):
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", "You are an AI assistant that capable to interact with users using friendly tone. Whenever you think it needed, add some emojis to your response. No need to use hashtags."),
@@ -46,7 +45,7 @@ def predict_chat(message, history, model_name, user_id):
     #### STREAM ####
     ################
     partial_msg = ""
-    # for chunk in chunk.stream({"message": message}):
+    # for chunk in chain.stream({"message": message}):
     for chunk in history_runnable.stream({"input": message}, config={"configurable": {"session_id": user_id}, "callbacks": [ConsoleCallbackHandler()]}):
         partial_msg = partial_msg + chunk.content
         yield partial_msg
