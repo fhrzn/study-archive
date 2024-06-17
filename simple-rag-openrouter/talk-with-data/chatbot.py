@@ -27,28 +27,32 @@ def get_chat_history(session_id: str, limit: Optional[int] = None, **kwargs):
 
 def predict_chat(message: str, history: list, model_name: str, user_id: str, collection_name: str):
 
-    # prompt = ChatPromptTemplate.from_messages([
-    #     ("system", "You are an AI assistant that capable to interact with users using friendly tone. "
-    #      "Whenever you think it needed, add some emojis to your response. No need to use hashtags."
-    #      "\n\n"
-    #      "Answer user's query based on the following context:"),
-    #     MessagesPlaceholder("context"),
-    #     # MessagesPlaceholder("history"),
-    #     ("human", "{input}")
-    # ])
-    prompt = ChatPromptTemplate.from_template(
-        'You are an AI assistant that capable to interact with users using friendly tone.'
-        'Whenever you think it needed, add some emojis to your response. No need to use hashtags.'
-        '\n\n'
-        'Answer user\'s input based on the following context below. If the context doesn\'t contains'
-        'the suitable answers, just say you dont know. Dont make up the answer!\n'
-        '{context}'
-        '\n---------------\n'
-        'Chat history:\n'
-        '{history}'
-        '\n---------------\n'
-        'User input: {input}'
-    )
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "You are an AI assistant that capable to interact with users using friendly tone. "
+         "Whenever you think it needed, add some emojis to your response. No need to use hashtags."
+         "\n\n"
+         "Answer user's query based on the following context:\n"
+         "{context}"
+         "\n---------------\n"
+         "Chat history:\n"),
+        MessagesPlaceholder("history"),
+        ("human", "{input}")
+    ])
+
+    # Optionally, you may use this format as well
+    # prompt = ChatPromptTemplate.from_template(
+    #     'You are an AI assistant that capable to interact with users using friendly tone.'
+    #     'Whenever you think it needed, add some emojis to your response. No need to use hashtags.'
+    #     '\n\n'
+    #     'Answer user\'s input based on the following context below. If the context doesn\'t contains'
+    #     'the suitable answers, just say you dont know. Dont make up the answer!\n'
+    #     '{context}'
+    #     '\n---------------\n'
+    #     'Chat history:\n'
+    #     '{history}'
+    #     '\n---------------\n'
+    #     'User input: {input}'
+    # )
 
     llm = ChatOpenAI(
         model=model_name,
@@ -58,29 +62,26 @@ def predict_chat(message: str, history: list, model_name: str, user_id: str, col
 
     # runnable for retrieving knowledge
     query_runnable = RunnableLambda(partial(knowledge.query, collection_name=collection_name))
-    history_runnable = RunnableLambda(get_chat_history)
+    retrieval_chain = RunnableParallel({"context": query_runnable, "input": itemgetter("input")})
 
-    # chain = prompt | llm
     chain = (
-        {"context": query_runnable, "history": history_runnable, "input": itemgetter("input")}
+        RunnablePassthrough.assign(context=retrieval_chain)
         | prompt
         | llm
     )
 
-    # history_runnable = RunnableWithMessageHistory(
-    #     chain,
-    #     get_session_history=get_chat_history,
-    #     input_messages_key="input",
-    #     history_messages_key="history"
-    # )
+    history_runnable = RunnableWithMessageHistory(
+        chain,
+        get_session_history=get_chat_history,
+        input_messages_key="input",
+        history_messages_key="history"
+    )
 
     ################
     #### STREAM ####
     ################
     partial_msg = ""
-    # for chunk in chain.stream({"message": message}):
-    # for chunk in history_runnable.stream({"input": message}, config={"configurable": {"session_id": user_id}, "callbacks": [ConsoleCallbackHandler()]}):
-    for chunk in chain.stream({"input": message, "session_id": user_id}, config={"callbacks": [ConsoleCallbackHandler()]}):
+    for chunk in history_runnable.stream({"input": message}, config={"configurable": {"session_id": user_id}, "callbacks": [ConsoleCallbackHandler()]}):
         partial_msg = partial_msg + chunk.content
         yield partial_msg
 

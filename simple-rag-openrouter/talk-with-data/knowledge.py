@@ -23,7 +23,15 @@ def init_vectordb(path: Optional[str] = None):
 
     global MILVUS
     if not MILVUS:
+        logger.info("initiating vectordb")
         MILVUS = MilvusClient(path)
+
+
+def close_vectordb():
+    if MILVUS:
+        logger.info("closing vectordb")
+        MILVUS.close()
+
 
 def upload_file(collection_name: str, file: Union[str, list[str], None]):
 
@@ -79,6 +87,7 @@ def __encode_and_insert(client: MilvusClient, data: List[Document], collection_n
 
 
 def get_collections():
+    init_vectordb()
     collections = MILVUS.list_collections()
     return collections
 
@@ -109,6 +118,6 @@ def query(query: str, collection_name: str):
             context_str += r['entity']['page_content'] + "\n"
     
     # query["context"] = context_str
-    # return query
-    return [SystemMessage(context_str)]
+    return context_str
+    # return [SystemMessage(context_str)]
     # return SystemMessage(context_str)
