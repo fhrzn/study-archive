@@ -1,0 +1,5 @@
+Product,Category,Qty (Kg),Price (Ruble),Total Price (Ruble),Purchased at,Store,Source Account,Purchase Date
+St. Isaac Cathedral Ticket,Trips,1,284,284,"August 1, 2022 2:51 PM (GMT+3)",Trips,Tinkoff,"August 1, 2022 6:51 PM (GMT+7)"
+Mandarin Oranges,Fruit,0.6,149.9,89.94,"August 1, 2022 2:51 PM (GMT+3)",Dixy,Tinkoff,"August 1, 2022 6:51 PM (GMT+7)"
+Marble cupcake,Snack,1,59.99,59.99,"August 1, 2022 2:51 PM (GMT+3)",Dixy,Tinkoff,"August 1, 2022 6:51 PM (GMT+7)"
+Shawarma,Snack,1,160,160,"August 1, 2022 2:51 PM (GMT+3)",Pirli,Tinkoff,"August 1, 2022 6:51 PM (GMT+7)"

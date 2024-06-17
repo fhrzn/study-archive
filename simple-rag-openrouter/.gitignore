@@ -3,3 +3,4 @@ pyrightconfig.json
 .env
 __pycache__
 *.db
+*.lock
