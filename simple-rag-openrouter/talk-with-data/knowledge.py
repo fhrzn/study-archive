@@ -8,9 +8,6 @@ from langchain_core.documents import Document
 import gradio as gr
 import os
 import time
-from langchain_core.messages.base import BaseMessage
-from langchain_core.messages import SystemMessage
-
 
 logger = logging.getLogger(__file__)
 
@@ -117,7 +114,4 @@ def query(query: str, collection_name: str):
         for r in res:
             context_str += r['entity']['page_content'] + "\n"
     
-    # query["context"] = context_str
     return context_str
-    # return [SystemMessage(context_str)]
-    # return SystemMessage(context_str)

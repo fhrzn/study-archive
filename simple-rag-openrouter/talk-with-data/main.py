@@ -23,9 +23,6 @@ def get_free_models():
         return sorted(models)
 
 with gr.Blocks(fill_height=True) as demo:
-
-    # if not MILVUS_CLIENT:
-    #     MILVUS_CLIENT = knowledge.init_vectordb()
         
     with gr.Tabs() as tabs:
         with gr.TabItem("Chat", id="chat"):
@@ -69,8 +66,6 @@ with gr.Blocks(fill_height=True) as demo:
         
         submit_file.click(knowledge.upload_file, inputs=[collection_name, upfile], outputs=[collection_name, upfile, collection_list, tabs])
 
-        
-        # demo.unload(knowledge.close_vectordb())
 
     demo.load(lambda: knowledge.get_collections())
 
