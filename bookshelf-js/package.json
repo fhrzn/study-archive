@@ -1,0 +1,24 @@
+{
+  "name": "bookshelf-js",
+  "version": "1.0.0",
+  "description": "bookshelf api project for dicoding back-end course",
+  "main": "server.js",
+  "repository": "https://github.com/fhrzn/study-archive.git",
+  "author": "affan",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@hapi/hapi": "^21.3.10",
+    "nano-id": "^1.1.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "lint": "eslint ./"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "eslint": "9.x",
+    "globals": "^15.6.0"
+  }
+}
