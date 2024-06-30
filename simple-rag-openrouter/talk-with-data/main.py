@@ -64,7 +64,7 @@ with gr.Blocks(fill_height=True) as demo:
             upfile = gr.File(label="Upload File")
             submit_file = gr.Button("Submit Knowledge", variant="primary")
         
-        submit_file.click(knowledge.upload_file, inputs=[collection_name, upfile], outputs=[collection_name, upfile, collection_list, tabs])
+            submit_file.click(knowledge.upload_file, inputs=[collection_name, upfile], outputs=[collection_name, upfile, collection_list, tabs])
 
 
     demo.load(lambda: knowledge.get_collections())

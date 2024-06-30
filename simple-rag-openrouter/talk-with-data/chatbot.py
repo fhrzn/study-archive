@@ -6,10 +6,9 @@ from langchain.callbacks.tracers import ConsoleCallbackHandler
 from typing import Optional
 import logging
 import os
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 import knowledge
 from functools import partial
-from operator import itemgetter
 
 logger = logging.getLogger(__name__)
 
@@ -62,10 +61,13 @@ def predict_chat(message: str, history: list, model_name: str, user_id: str, col
 
     # runnable for retrieving knowledge
     query_runnable = RunnableLambda(partial(knowledge.query, collection_name=collection_name))
-    retrieval_chain = RunnableParallel({"context": query_runnable, "input": itemgetter("input")})
+
+    # ##### FOR DEBUGGING ONLY #####
+    # _context = query_runnable.invoke(input=message)
+    # logger.info(f"context: {_context}")
 
     chain = (
-        RunnablePassthrough.assign(context=retrieval_chain)
+        RunnablePassthrough.assign(context=query_runnable)
         | prompt
         | llm
     )
