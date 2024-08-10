@@ -5,7 +5,6 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 
 class SongsService {
     constructor() {
-        this._songs = [];
         this._pool = new Pool();
     }
 
