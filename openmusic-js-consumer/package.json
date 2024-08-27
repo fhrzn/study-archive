@@ -1,0 +1,19 @@
+{
+  "name": "openmusic-js-consumer",
+  "version": "1.0.0",
+  "description": "a queue consumer app for openmusic-js app",
+  "main": "index.js",
+  "author": "affan",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon ./src/consumer.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "auto-bind": "4",
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.14",
+    "nodemon": "^3.1.4",
+    "pg": "^8.12.0"
+  }
+}
