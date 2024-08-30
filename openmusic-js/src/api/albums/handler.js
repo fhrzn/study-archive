@@ -1,20 +1,17 @@
+const autoBind = require("auto-bind");
+
 class AlbumsHandler {
     constructor(service, validator) {
         this._service = service;
         this._validator = validator;
 
-        this.postAlbumHandler = this.postAlbumHandler.bind(this);
-        this.getAlbumsHandler = this.getAlbumsHandler.bind(this);
-        this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
-        this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
-        this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
+        autoBind(this);
     }
 
     async postAlbumHandler(request, h) {
         this._validator.validateAlbumPayload(request.payload);
-        const { name, year } = request.payload;
 
-        const albumId = await this._service.addAlbum({ name, year });
+        const albumId = await this._service.addAlbum(request.payload);
 
         const response = h.response({
             status:'success',
@@ -60,6 +57,54 @@ class AlbumsHandler {
             status:'success',
             message: 'Album berhasil dihapus'
         };
+    }
+
+    async likeAlbumByIdHandler(request, h) {
+        const { id } = request.params;
+        const { id: userId } = request.auth.credentials;
+
+        await this._service.getAlbumById(id)
+
+        await this._service.likeAlbumById(id, userId);
+
+        const response = h.response({
+            status:'success',
+            message: 'Album berhasil ditambahkan ke favorit'
+        });
+        response.code(201);
+        return response;
+    }
+
+    async dislikeAlbumByIdHandler(request) {
+        const { id } = request.params;
+        const { id: userId } = request.auth.credentials;
+
+        await this._service.getAlbumById(id)
+
+        await this._service.dislikeAlbumById(id, userId);
+
+        return {
+            status:'success',
+            message: 'Album berhasil dikeluarkan dari favorit'
+        };
+    }
+
+    async getAlbumLikesByIdHandler(request, h) {
+        const { id } = request.params;
+
+        await this._service.getAlbumById(id);
+
+        const { isCache, likes } = await this._service.getAlbumLikesById(id);
+        likes.likes = +likes.likes
+
+        const response = h.response({
+            status: 'success',
+            data: likes
+        })
+
+        if (isCache) response.header("X-Data-Source", "cache");
+
+        return response
     }
 }
 

@@ -8,24 +8,25 @@
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-    pgm.createTable('albums', {
+    pgm.createTable('users', {
         id: {
             type: 'VARCHAR(50)',
             primaryKey: true,
         },
-        name: {
-            type: 'VARCHAR(100)',
+        username: {
+            type: 'VARCHAR(50)',
+            unique: true,
             notNull: true,
         },
-        year: {
-            type: 'INTEGER',
+        password: {
+            type: 'TEXT',
             notNull: true,
         },
-        cover: {
-            type: 'VARCHAR(255)',
-            notNull: false,
-        }
-    })
+        fullname: {
+            type: 'Text',
+            notNull: true,
+        },
+    });
 };
 
 /**
@@ -33,4 +34,4 @@ exports.up = (pgm) => {
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-exports.down = (pgm) => pgm.dropTable('albums');
+exports.down = (pgm) => pgm.dropTable('users');
