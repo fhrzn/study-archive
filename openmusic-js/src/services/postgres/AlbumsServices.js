@@ -49,14 +49,15 @@ class AlbumsService {
         const resultSong = await this._pool.query(songQuery);
         const songs = resultSong.rows.map(({ id, title, performer }) => ({ id, title, performer}))
         
-        // return result.rows[0];
-        return {...resultAlbum.rows[0], songs };
+        
+        const { cover, ...item } = resultAlbum.rows[0];
+        return {...item, coverUrl: cover, songs};
     }
 
-    async editAlbumById(id, { name, year }) {
+    async editAlbumById(id, { name, year, cover }) {
         const query = {
-            text: 'UPDATE albums SET name = $1, year = $2 WHERE id = $3 RETURNING id',
-            values: [name, year, id],
+            text: 'UPDATE albums SET name = $1, year = $2, cover = $3 WHERE id = $4 RETURNING id',
+            values: [name, year, cover, id],
         };
         const result = await this._pool.query(query);
 
