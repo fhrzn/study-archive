@@ -22,7 +22,9 @@ class PlaylistService {
         const result = await this._pool.query(query);
         const songs = result.rows.map(({ id, title, performer }) => ({ id, title, performer }));
 
-        return {...resultPlaylist.rows[0], songs};
+        return {
+            "playlist": {...resultPlaylist.rows[0], songs}
+        };
     }
 }
 
