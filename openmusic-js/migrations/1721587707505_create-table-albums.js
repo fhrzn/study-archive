@@ -21,7 +21,7 @@ exports.up = (pgm) => {
             type: 'INTEGER',
             notNull: true,
         },
-        coverUrl: {
+        cover: {
             type: 'VARCHAR(255)',
             notNull: false,
         }
